@@ -10,8 +10,16 @@ let titleEle = document.querySelector("#gifTitle");
 
 searchBtnEle.addEventListener("click", searchGif);
 
-async function searchGif() {
-    let searchTerm = inputEle.value;
+async function searchGif(event, prevSearch) {
+    let searchTerm = prevSearch || inputEle.value;
+
+    if (!prevSearches.includes(searchTerm)) {
+        prevSearches.push(searchTerm);
+        let prevSearchEle = document.createElement("p")
+        prevSearchEle.textContent = searchTerm;
+        prevSearchEle.addEventListener("click", (e) => searchGif(e, searchTerm))
+        prevSearchesEle.appendChild(prevSearchEle); 
+    }
 
     try {
         let response = await fetch(
@@ -21,7 +29,9 @@ async function searchGif() {
         console.log(responseBody);
         titleEle.textContent - responseBody.data.title;
         imgEle.src = responseBody.data.images.original.url;
+
+        inputEle.value = "";
     } catch (error) {
         console.error(error);
     }
-}
+} 
